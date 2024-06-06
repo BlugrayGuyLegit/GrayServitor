@@ -30,7 +30,7 @@ async def on_ready():
     print(f'Bot is online as {bot.user}')
 
 warn_counts = {}
-ticket_category_id = 1210339937539325973  # Remplace par l'ID de la catégorie de ticket
+ticket_category_id = 1210339937539325973  # ID de la catégorie de ticket
 
 @bot.tree.command(name="clear", description="Clear messages")
 @app_commands.describe(amount="The number of messages to delete")
@@ -109,21 +109,6 @@ async def close(interaction: discord.Interaction):
 async def ping(ctx):
     latency = round(bot.latency * 1000)
     await ctx.send(f'Pong! {latency}ms')
-
-@bot.command(name="help")
-async def help_command(ctx):
-    commands = {
-        "Admin": ["/warn", "/unwarn", "/warns", "/mute", "/unmute", "/clear"],
-        "Member": ["g!info", "g!ping", "g!help", "/ticket", "/close"]
-    }
-    user_roles = [role.name for role in ctx.author.roles]
-
-    if any(role in user_roles for role in ["Admin", "Moderator", "Staff"]):
-        response = "Admin Commands:\n" + "\n".join(commands["Admin"]) + "\n\nMember Commands:\n" + "\n".join(commands["Member"])
-    else:
-        response = "Member Commands:\n" + "\n".join(commands["Member"])
-
-    await ctx.send(response)
 
 @bot.command(name="info")
 async def info(ctx):
