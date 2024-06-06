@@ -8,12 +8,11 @@ intents.messages = True
 intents.message_content = True
 
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD_ID = os.getenv('DISCORD_GUILD_ID')
+GUILD_ID = int(os.getenv('DISCORD_GUILD_ID'))
 
 class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="g!", intents=intents)
-        self.tree = app_commands.CommandTree(self)
 
     async def setup_hook(self):
         guild = discord.Object(id=GUILD_ID)
