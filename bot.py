@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import os
-from discord.ui import Modal, InputText
+from discord.ui import Modal, TextInput, View
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -26,7 +26,7 @@ bot = MyBot()
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name="Gray Servitor is back! g!help for any information!"))
+    await bot.change_presence(activity=discord.Game(name="g!help for any information!"))
     print(f'Bot is online as {bot.user}')
 
 warn_counts = {}
@@ -81,10 +81,11 @@ async def unmute(interaction: discord.Interaction, member: discord.Member):
 class TicketModal(Modal):
     def __init__(self):
         super().__init__(title="Create a Ticket")
-        self.add_item(InputText(label="Reason", placeholder="Enter the reason for the ticket"))
+        self.reason = TextInput(label="Reason", placeholder="Enter the reason for the ticket")
+        self.add_item(self.reason)
 
     async def on_submit(self, interaction: discord.Interaction):
-        reason = self.children[0].value
+        reason = self.reason.value
         category = discord.utils.get(interaction.guild.categories, id=ticket_category_id)
         if category is None:
             await interaction.response.send_message("Ticket category not found.", ephemeral=True)
@@ -113,12 +114,12 @@ async def ping(ctx):
 async def help_command(ctx):
     commands = {
         "Admin": ["/warn", "/unwarn", "/warns", "/mute", "/unmute", "/clear"],
-        "Member": ["g!info", "g!ping", "g!help", "/ticket"]
+        "Member": ["g!info", "g!ping", "g!help", "/ticket", "/close"]
     }
     user_roles = [role.name for role in ctx.author.roles]
 
     if any(role in user_roles for role in ["Admin", "Moderator", "Staff"]):
-        response = "Admin Commands:\n" + "\n".join(commands["Admin"]) + "\n\nMember Commands:\n" + "\n".join(commands["Member"])
+        response = "Admin Commands:\n" + "\n".join(commands["Admin"]) + "\n\nMember Commands:\n" + "\n.join(commands["Member"])
     else:
         response = "Member Commands:\n" + "\n".join(commands["Member"])
 
