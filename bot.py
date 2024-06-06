@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import os
-from discord.ui import Modal, TextInput, View
+from discord.ui import Modal, TextInput
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -119,7 +119,7 @@ async def help_command(ctx):
     user_roles = [role.name for role in ctx.author.roles]
 
     if any(role in user_roles for role in ["Admin", "Moderator", "Staff"]):
-        response = "Admin Commands:\n" + "\n".join(commands["Admin"]) + "\n\nMember Commands:\n" + "\n.join(commands["Member"])
+        response = "Admin Commands:\n" + "\n".join(commands["Admin"]) + "\n\nMember Commands:\n" + "\n".join(commands["Member"])
     else:
         response = "Member Commands:\n" + "\n".join(commands["Member"])
 
