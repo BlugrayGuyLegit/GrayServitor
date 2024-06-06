@@ -24,7 +24,7 @@ bot = MyBot()
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name="My Status"))
+    await bot.change_presence(activity=discord.Game(name="Gray Servitor is back!"))
     print(f'Bot is online as {bot.user}')
 
 @bot.tree.command(name="clear", description="Clear messages")
