@@ -7,4 +7,3 @@ next ep: 75
 actual season: 23
 next season: 24 (soon)
 last ep description: Astro arc begun
- 
