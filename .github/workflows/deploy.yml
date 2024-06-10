@@ -11,14 +11,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    runs:
+      using: 'node20'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2  # Mettre à jour vers la version 2 de l'action
-        with:
-          node-version: '20'
 
       - name: Set up Python
         uses: actions/setup-python@v3
