@@ -164,4 +164,5 @@ async def info(ctx):
         info_text = file.read()
     await ctx.send(info_text)
 
-bot.run(TOKEN)
+if __name__ == '__main__':
+    bot.run(TOKEN)
