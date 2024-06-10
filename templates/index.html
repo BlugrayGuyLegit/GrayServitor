@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discord Bot Management</title>
+    <style>
+        .hidden { display: none; }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#view-servers').click(function() {
+                $('.content').hide();
+                $('#servers-section').show();
+                fetchServers();
+            });
+
+            $(document).on('click', '.view-channels', function() {
+                var serverId = $(this).data('server-id');
+                $('.content').hide();
+                $('#channels-section').show();
+                fetchChannels(serverId);
+            });
+
+            $(document).on('click', '.view-messages', function() {
+                var channelId = $(this).data('channel-id');
+                $('.content').hide();
+                $('#messages-section').show();
+                fetchMessages(channelId);
+            });
+
+            $('#send-message-form').submit(function(e) {
+                e.preventDefault();
+                var channelId = $('#send-message').data('channel-id');
+                sendMessage(channelId);
+            });
+        });
+
+        function fetchServers() {
+            $.get('/servers', function(data) {
+                var serversHtml = '';
+                data.forEach(function(server) {
+                    serversHtml += `<li><a href="#" class="view-channels" data-server-id="${server.id}">${server.name}</a></li>`;
+                });
+                $('#servers-list').html(serversHtml);
+            });
+        }
+
+        function fetchChannels(serverId) {
+            $.get(`/channels/${serverId}`, function(data) {
+                var channelsHtml = '';
+                data.forEach(function(channel) {
+                    channelsHtml += `<li><a href="#" class="view-messages" data-channel-id="${channel.id}">${channel.name} (${channel.type})</a></li>`;
+                });
+                $('#channels-list').html(channelsHtml);
+            });
+        }
+
+        function fetchMessages(channelId) {
+            $.get(`/messages/${channelId}`, function(data) {
+                var messagesHtml = '';
+                data.forEach(function(message) {
+                    messagesHtml += `<li>${message.author}: ${message.content} (${message.timestamp})</li>`;
+                });
+                $('#messages-list').html(messagesHtml);
+                $('#send-message').data('channel-id', channelId);
+            });
+        }
+
+        function sendMessage(channelId) {
+            var message = $('#message-content').val();
+            $.post('/send_message', { channel_id: channelId, message: message }, function(response) {
+                alert(response.status);
+                fetchMessages(channelId);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Discord Bot Management</h1>
+    <a href="#" id="view-servers">View Servers</a>
+    
+    <div id="servers-section" class="content hidden">
+        <h2>Servers</h2>
+        <ul id="servers-list"></ul>
+        <a href="#" onclick="$('.content').hide();">Back to Home</a>
+    </div>
+    
+    <div id="channels-section" class="content hidden">
+        <h2>Channels</h2>
+        <ul id="channels-list"></ul>
+        <a href="#" onclick="$('#channels-section').hide(); $('#servers-section').show();">Back to Servers</a>
+    </div>
+    
+    <div id="messages-section" class="content hidden">
+        <h2>Messages</h2>
+        <ul id="messages-list"></ul>
+        <form id="send-message-form">
+            <input type="text" id="message-content" placeholder="Enter your message" required>
+            <button type="submit">Send</button>
+        </form>
+        <a href="#" onclick="$('#messages-section').hide(); $('#channels-section').show();">Back to Channels</a>
+    </div>
+</body>
+</html>
