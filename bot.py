@@ -1,10 +1,9 @@
+
 import discord
 from discord.ext import commands
 from discord import app_commands
 import os
 from discord.ui import Modal, TextInput
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -14,17 +13,10 @@ intents.members = True
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD_ID = int(os.getenv('DISCORD_GUILD_ID'))
-SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
-SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
-SPOTIFY_REDIRECT_URI = os.getenv('SPOTIFY_REDIRECT_URI')
 
 class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="g!", intents=intents)
-        self.spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIFY_CLIENT_ID,
-                                                                 client_secret=SPOTIFY_CLIENT_SECRET,
-                                                                 redirect_uri=SPOTIFY_REDIRECT_URI,
-                                                                 scope="user-modify-playback-state,user-read-playback-state"))
 
     async def setup_hook(self):
         guild = discord.Object(id=GUILD_ID)
@@ -40,44 +32,6 @@ async def on_ready():
 
 warn_counts = {}
 ticket_category_id = 1210339937539325973  # ID de la catégorie de ticket
-
-# Spotify Commands
-@bot.command(name="play")
-async def play(ctx, link: str):
-    try:
-        bot.spotify.start_playback(uris=[link])
-        await ctx.send(f"Playing track: {link}")
-    except Exception as e:
-        await ctx.send(f"Error: {e}")
-
-@bot.command(name="stop")
-async def stop(ctx):
-    try:
-        bot.spotify.pause_playback()
-        await ctx.send("Playback stopped.")
-    except Exception as e:
-        await ctx.send(f"Error: {e}")
-
-@bot.command(name="next")
-async def next(ctx):
-    try:
-        bot.spotify.next_track()
-        await ctx.send("Skipped to the next track.")
-    except Exception as e:
-        await ctx.send(f"Error: {e}")
-
-@bot.command(name="queue")
-async def queue(ctx):
-    try:
-        current_track = bot.spotify.current_playback()
-        if current_track and current_track['item']:
-            track = current_track['item']
-            track_info = f"Currently playing: {track['name']} by {', '.join(artist['name'] for artist in track['artists'])}"
-            await ctx.send(track_info)
-        else:
-            await ctx.send("No track is currently playing.")
-    except Exception as e:
-        await ctx.send(f"Error: {e}")
 
 # Existing Commands
 @bot.tree.command(name="clear", description="Clear messages")
