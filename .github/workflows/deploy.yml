@@ -15,10 +15,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-    runs:
-        using: 'node20'
-        main: 'web_app.py'
-
       - name: Install Node.js
         run: |
           curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
@@ -28,6 +24,12 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: '3.9'
+
+      - name: Run node 20
+        run: |
+         runs:
+         using: 'node20'
+         main: 'web_app.py'
 
       - name: Install dependencies
         run: |
