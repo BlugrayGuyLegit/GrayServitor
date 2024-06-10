@@ -11,10 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        runner: [node20]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -22,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.runner }}
+          node-version: '20'
 
       - name: Set up Python
         uses: actions/setup-python@v3
