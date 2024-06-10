@@ -11,14 +11,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      NODE_VERSION: 20  # Définir explicitement la version de Node.js
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  
+        uses: actions/checkout@v3  # Mise à jour vers la version 3 de l'action
         with:
           ref: main
 
       - name: Set up Python
-        uses: actions/setup-python@v3  
+        uses: actions/setup-python@v3  # Mise à jour vers la version 3 de l'action
         with:
           python-version: '3.9'
 
