@@ -25,9 +25,13 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Run node 20
+      - name: Node.js version
+        uses: actions/setup-node@v2
+        with:
+           node-version: '20'
+
+      - name: Node.js version (install)
         run: |
-         runs:
          using: 'node20'
          main: 'web_app.py'
 
