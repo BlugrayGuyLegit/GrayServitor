@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import os
-from discord.ui import Modal, TextInput
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -13,9 +12,14 @@ intents.members = True
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD_ID = int(os.getenv('DISCORD_GUILD_ID'))
 
+# Variables globales pour les niveaux et l'XP
+levels = {}
+xp = {}
+xp_threshold = 100
+
 class MyBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix="g!", intents=intents)
+        super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
         guild = discord.Object(id=GUILD_ID)
@@ -26,111 +30,112 @@ bot = MyBot()
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name="g!help for any information!"))
+    await bot.change_presence(activity=discord.Game(name="!help for any information!"))
     print(f'Bot is online as {bot.user}')
 
-warn_counts = {}
-ticket_category_id = 1210339937539325973  # ID de la catégorie de ticket
+# Commande pour afficher le rang ou le niveau d'un utilisateur
+@bot.command(name="rank")
+@bot.command(name="level")
+@bot.command(name="lvl")
+async def rank(ctx, user: discord.Member = None):
+    user = user or ctx.author
+    user_level = levels.get(user.id, 0)
+    user_xp = xp.get(user.id, 0)
+    await ctx.send(f"{user.mention} is level {user_level} with {user_xp} XP.")
 
-# Existing Commands
-@bot.tree.command(name="clear", description="Clear messages")
-@app_commands.describe(amount="The number of messages to delete")
-async def clear(interaction: discord.Interaction, amount: int):
-    if amount <= 0:
-        await interaction.response.send_message("Amount must be positive.", ephemeral=True)
-        return
-    await interaction.channel.purge(limit=amount)
-    await interaction.response.send_message(f"Deleted {amount} messages.", ephemeral=True)
+# Commandes pour ajouter de l'XP ou des niveaux
+@bot.command(name="add-xp")
+@commands.has_permissions(manage_guild=True)
+async def add_xp(ctx, user: discord.Member, amount: int):
+    if user.id not in xp:
+        xp[user.id] = 0
+    xp[user.id] += amount
+    await check_level_up(user)
+    await ctx.send(f"Added {amount} XP to {user.mention}.")
 
-@bot.tree.command(name="warn", description="Warn a user")
-@app_commands.describe(member="The member to warn", reason="The reason for the warning")
-async def warn(interaction: discord.Interaction, member: discord.Member, reason: str):
-    if member.id not in warn_counts:
-        warn_counts[member.id] = 0
-    warn_counts[member.id] += 1
-    await interaction.response.send_message(f"{member.mention} has been warned for: {reason}. Total warnings: {warn_counts[member.id]}")
+@bot.command(name="add-level")
+@commands.has_permissions(manage_guild=True)
+async def add_level(ctx, user: discord.Member, amount: int):
+    if user.id not in levels:
+        levels[user.id] = 0
+    levels[user.id] += amount
+    await ctx.send(f"Added {amount} level(s) to {user.mention}.")
 
-@bot.tree.command(name="unwarn", description="Remove a warning from a user")
-@app_commands.describe(member="The member to unwarn")
-async def unwarn(interaction: discord.Interaction, member: discord.Member):
-    if member.id in warn_counts and warn_counts[member.id] > 0:
-        warn_counts[member.id] -= 1
-        await interaction.response.send_message(f"Removed a warning from {member.mention}. Total warnings: {warn_counts[member.id]}")
+# Commandes pour supprimer de l'XP ou des niveaux
+@bot.command(name="remove-xp")
+@commands.has_permissions(manage_guild=True)
+async def remove_xp(ctx, user: discord.Member, amount: int):
+    if user.id not in xp:
+        xp[user.id] = 0
+    xp[user.id] = max(0, xp[user.id] - amount)
+    await ctx.send(f"Removed {amount} XP from {user.mention}.")
+
+@bot.command(name="remove-level")
+@commands.has_permissions(manage_guild=True)
+async def remove_level(ctx, user: discord.Member, amount: int):
+    if user.id not in levels:
+        levels[user.id] = 0
+    levels[user.id] = max(0, levels[user.id] - amount)
+    await ctx.send(f"Removed {amount} level(s) from {user.mention}.")
+
+# Commande pour définir un niveau spécifique
+@bot.command(name="set-level")
+@commands.has_permissions(manage_guild=True)
+async def set_level(ctx, user: discord.Member, amount: int):
+    levels[user.id] = amount
+    await ctx.send(f"Set {user.mention}'s level to {amount}.")
+
+# Commande pour réinitialiser le niveau d'un utilisateur
+@bot.command(name="reset-level")
+@commands.has_permissions(manage_guild=True)
+async def reset_level(ctx, user: discord.Member = None):
+    if user:
+        levels[user.id] = 0
+        xp[user.id] = 0
+        await ctx.send(f"Reset level and XP for {user.mention}.")
     else:
-        await interaction.response.send_message(f"{member.mention} has no warnings.", ephemeral=True)
+        levels.clear()
+        xp.clear()
+        await ctx.send("Reset levels and XP for all users.")
 
-@bot.tree.command(name="warns", description="Show warnings of all users")
-async def warns(interaction: discord.Interaction):
-    if not warn_counts:
-        await interaction.response.send_message("No warnings to display.")
-        return
-    warn_list = "\n".join([f"<@{user_id}>: {count} warn(s)" for user_id, count in warn_counts.items()])
-    await interaction.response.send_message(warn_list)
+# Commande pour afficher le classement des utilisateurs
+@bot.command(name="leaderboard")
+async def leaderboard(ctx):
+    sorted_levels = sorted(levels.items(), key=lambda x: x[1], reverse=True)
+    leaderboard_text = "\n".join([f"<@{user_id}>: Level {level}" for user_id, level in sorted_levels])
+    await ctx.send(f"Leaderboard:\n{leaderboard_text}")
 
-@bot.tree.command(name="mute", description="Mute a user")
-@app_commands.describe(member="The member to mute", reason="The reason for the mute")
-async def mute(interaction: discord.Interaction, member: discord.Member, reason: str):
-    await member.edit(mute=True)
-    await interaction.response.send_message(f"{member.mention} has been muted for: {reason}.")
+# Commande pour envoyer un message dans un salon choisi (modérateurs uniquement)
+@bot.command(name="say")
+@commands.has_permissions(manage_guild=True)
+async def say(ctx, channel: discord.TextChannel, *, message: str):
+    await channel.send(message)
+    await ctx.send(f"Message sent to {channel.mention}.")
 
-@bot.tree.command(name="unmute", description="Unmute a user")
-@app_commands.describe(member="The member to unmute")
-async def unmute(interaction: discord.Interaction, member: discord.Member):
-    await member.edit(mute=False)
-    await interaction.response.send_message(f"{member.mention} has been unmuted.")
+# Fonction pour vérifier le niveau supérieur
+async def check_level_up(user):
+    user_xp = xp[user.id]
+    user_level = levels.get(user.id, 0)
+    if user_xp >= (user_level + 1) * xp_threshold:
+        levels[user.id] = user_level + 1
+        await user.send(f"Congratulations! You've leveled up to level {levels[user.id]}!")
 
-class TicketModal(Modal):
-    def __init__(self):
-        super().__init__(title="Create a Ticket")
-        self.reason = TextInput(label="Reason", placeholder="Enter the reason for the ticket")
-        self.add_item(self.reason)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        reason = self.reason.value
-        category = discord.utils.get(interaction.guild.categories, id=ticket_category_id)
-        if category is None:
-            await interaction.response.send_message("Ticket category not found.", ephemeral=True)
-            return
-        channel = await category.create_text_channel(name=f"ticket-{interaction.user.name}")
-        await channel.send(f"{interaction.user.mention} created a ticket with the reason: {reason}")
-        await interaction.response.send_message(f"Ticket created: {channel.mention}", ephemeral=True)
-
-@bot.tree.command(name="ticket", description="Create a ticket")
-async def ticket(interaction: discord.Interaction):
-    await interaction.response.send_modal(TicketModal())
-
-@bot.tree.command(name="close", description="Close the current ticket")
-async def close(interaction: discord.Interaction):
-    if interaction.channel.category and interaction.channel.category.id == ticket_category_id:
-        await interaction.channel.delete()
-    else:
-        await interaction.response.send_message("This is not a ticket channel.", ephemeral=True)
-
-@bot.command(name="ping")
-async def ping(ctx):
-    latency = round(bot.latency * 1000)
-    await ctx.send(f'Pong! {latency}ms')
-
-@bot.command(name="info")
-async def info(ctx):
-    with open('info.txt', 'r') as file:
-        info_text = file.read()
-    await ctx.send(info_text)
-
-# New g!skibidi command
-@bot.command(name="skibidi")
-async def skibidi(ctx):
-    embed = discord.Embed(
-        title="Skibidi toilet song",
-        description=(
-            "Hey skibidi sigma rizzer, there is the skibidi toilet song:\n\n"
-            "(Sometimes I looks like ridiculous) Brrrrrr skibidi dop dop yes yes "
-            "skibidi dop neeh neeh skibidi dop dop dop yes yes skibidi dop neeh neeh "
-            "everyone want to party skibidi skibidi skibidi..."
-        )
+# Commande d'aide personnalisée
+@bot.command(name="help")
+async def help_command(ctx):
+    help_text = (
+        "Available commands:\n"
+        "!rank | !level | !lvl [user] - Show your or another user's level and XP.\n"
+        "!add-xp <user> <amount> - Add XP to a user.\n"
+        "!add-level <user> <amount> - Add level(s) to a user.\n"
+        "!remove-xp <user> <amount> - Remove XP from a user.\n"
+        "!remove-level <user> <amount> - Remove level(s) from a user.\n"
+        "!set-level <user> <amount> - Set a user's level.\n"
+        "!reset-level [user] - Reset level and XP for a user or all users.\n"
+        "!leaderboard - Show the leaderboard.\n"
+        "!say <channel> <message> - Send a message to a specific channel (moderators only)."
     )
-    embed.set_footer(text=f'requested by {ctx.author.name}')
-    await ctx.send(embed=embed)
+    await ctx.send(help_text)
 
 if __name__ == '__main__':
     bot.run(TOKEN)
