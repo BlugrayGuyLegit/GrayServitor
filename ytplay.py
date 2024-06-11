@@ -40,7 +40,7 @@ async def stop(ctx):
     await ctx.send("Stopped playing music.")
 
 @bot.tree.command(name="warn", description="Warn a user")
-@app_commands.describe(member="The member to warn", reason="The reason for the warning")
+@bot.tree.command.description(member="The member to warn", reason="The reason for the warning")
 async def warn(interaction: discord.Interaction, member: discord.Member, reason: str):
     if member.id not in warn_counts:
         warn_counts[member.id] = 0
@@ -48,20 +48,12 @@ async def warn(interaction: discord.Interaction, member: discord.Member, reason:
     await interaction.response.send_message(f"{member.mention} has been warned for: {reason}. Total warnings: {warn_counts[member.id]}")
 
 @bot.tree.command(name="unwarn", description="Remove a warning from a user")
-@app_commands.describe(member="The member to unwarn")
+@bot.tree.command.description(member="The member to unwarn")
 async def unwarn(interaction: discord.Interaction, member: discord.Member):
     if member.id in warn_counts and warn_counts[member.id] > 0:
         warn_counts[member.id] -= 1
         await interaction.response.send_message(f"Removed a warning from {member.mention}. Total warnings: {warn_counts[member.id]}")
     else:
         await interaction.response.send_message(f"{member.mention} has no warnings.", ephemeral=True)
-
-@bot.tree.command(name="warns", description="Show warnings of all users")
-async def warns(interaction: discord.Interaction):
-    if not warn_counts:
-        await interaction.response.send_message("No warnings to display.")
-        return
-    warn_list = "\n".join([f"<@{user_id}>: {count} warn(s)" for user_id, count in warn_counts.items()])
-    await interaction.response.send_message(warn_list)
-
+        
 bot.run(TOKEN)
