@@ -15,6 +15,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install and request file requirements
+        run: |
+          pip install -r requirements.txt
+
       - name: Install Node.js
         run: |
           curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
@@ -36,6 +40,11 @@ jobs:
           pip install discord.py python-dotenv Flask
           pip install discord.py python-dotenv requests
 
+      - name: Install YouTube API for python
+        run: |
+          pip install discord.py[youtube]
+          pip install youtube_dl
+
       - name: Run the bot and Flask API
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
@@ -45,6 +54,6 @@ jobs:
           SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
         run: |
           while true; do
-            python bot.py & python web_app.py
+            python bot.py & python web_app.py & python ytplay.py
             sleep 21480 
           done
