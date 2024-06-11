@@ -33,10 +33,8 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name="!help for any information!"))
     print(f'Bot is online as {bot.user}')
 
-# Commande pour afficher le rang ou le niveau d'un utilisateur
-@bot.command(name="rank")
-@bot.command(name="level")
-@bot.command(name="lvl")
+# Commande pour afficher le rang ou le niveau d'un utilisateur avec différents alias
+@bot.command(name="rank", aliases=["level", "lvl"])
 async def rank(ctx, user: discord.Member = None):
     user = user or ctx.author
     user_level = levels.get(user.id, 0)
