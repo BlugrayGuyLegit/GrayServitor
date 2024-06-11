@@ -153,7 +153,6 @@ async def ping(ctx):
     latency = round(bot.latency * 1000)
     await ctx.send(f'Pong! {latency}ms')
 
-# Commande skibidi
 @bot.command(name="skibidi")
 async def skibidi(ctx):
     embed = discord.Embed(
@@ -161,11 +160,10 @@ async def skibidi(ctx):
         description=("Hey skibidi sigma rizzer, there is the skibidi toilet song:\n\n"
                      "(Sometimes I looks like ridiculous) Brrrrrr skibidi dop dop yes yes skibidi dop neeh neeh "
                      "skibidi dop dop dop yes yes skibidi dop neeh neeh everyone want to party skibidi skibidi "
-                     "skibidi..."),
-        footer=f"requested by {ctx.author.name}"
+                     "skibidi...")
     )
+    embed.set_footer(text=f"Requested by {ctx.author.name}")
     await ctx.send(embed=embed)
-
 # Commande info
 @bot.command(name="info")
 async def info(ctx):
