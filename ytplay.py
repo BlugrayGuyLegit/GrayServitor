@@ -1,7 +1,9 @@
+import os
 import discord
 from discord.ext import commands
 import youtube_dl
 
+TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='g!', intents=discord.Intents.default())
 
 @bot.command(name='play')
