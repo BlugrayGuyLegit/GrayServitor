@@ -35,81 +35,89 @@ async def on_ready():
     print(f'Bot is online as {bot.user}')
 
 # Commande pour afficher le rang ou le niveau d'un utilisateur avec différents alias
-@bot.command(name="rank", aliases=["level", "lvl"])
-async def rank(ctx, user: discord.Member = None):
-    user = user or ctx.author
+@bot.tree.command(name="rank", description="Show your or another user's level and XP")
+@app_commands.describe(user="The user whose rank to show")
+async def rank(interaction: discord.Interaction, user: discord.Member = None):
+    user = user or interaction.user
     user_level = levels.get(user.id, 0)
     user_xp = xp.get(user.id, 0)
-    await ctx.send(f"{user.mention} is level {user_level} with {user_xp} XP.")
+    await interaction.response.send_message(f"{user.mention} is level {user_level} with {user_xp} XP.")
 
 # Commandes pour ajouter de l'XP ou des niveaux
-@bot.command(name="add-xp")
+@bot.tree.command(name="add-xp", description="Add XP to a user")
+@app_commands.describe(user="The user to add XP to", amount="The amount of XP to add")
 @commands.has_permissions(manage_guild=True)
-async def add_xp(ctx, user: discord.Member, amount: int):
+async def add_xp(interaction: discord.Interaction, user: discord.Member, amount: int):
     if user.id not in xp:
         xp[user.id] = 0
     xp[user.id] += amount
     await check_level_up(user)
-    await ctx.send(f"Added {amount} XP to {user.mention}.")
+    await interaction.response.send_message(f"Added {amount} XP to {user.mention}.")
 
-@bot.command(name="add-level")
+@bot.tree.command(name="add-level", description="Add level(s) to a user")
+@app_commands.describe(user="The user to add levels to", amount="The amount of levels to add")
 @commands.has_permissions(manage_guild=True)
-async def add_level(ctx, user: discord.Member, amount: int):
+async def add_level(interaction: discord.Interaction, user: discord.Member, amount: int):
     if user.id not in levels:
         levels[user.id] = 0
     levels[user.id] += amount
-    await ctx.send(f"Added {amount} level(s) to {user.mention}.")
+    await interaction.response.send_message(f"Added {amount} level(s) to {user.mention}.")
 
 # Commandes pour supprimer de l'XP ou des niveaux
-@bot.command(name="remove-xp")
+@bot.tree.command(name="remove-xp", description="Remove XP from a user")
+@app_commands.describe(user="The user to remove XP from", amount="The amount of XP to remove")
 @commands.has_permissions(manage_guild=True)
-async def remove_xp(ctx, user: discord.Member, amount: int):
+async def remove_xp(interaction: discord.Interaction, user: discord.Member, amount: int):
     if user.id not in xp:
         xp[user.id] = 0
     xp[user.id] = max(0, xp[user.id] - amount)
-    await ctx.send(f"Removed {amount} XP from {user.mention}.")
+    await interaction.response.send_message(f"Removed {amount} XP from {user.mention}.")
 
-@bot.command(name="remove-level")
+@bot.tree.command(name="remove-level", description="Remove level(s) from a user")
+@app_commands.describe(user="The user to remove levels from", amount="The amount of levels to remove")
 @commands.has_permissions(manage_guild=True)
-async def remove_level(ctx, user: discord.Member, amount: int):
+async def remove_level(interaction: discord.Interaction, user: discord.Member, amount: int):
     if user.id not in levels:
         levels[user.id] = 0
     levels[user.id] = max(0, levels[user.id] - amount)
-    await ctx.send(f"Removed {amount} level(s) from {user.mention}.")
+    await interaction.response.send_message(f"Removed {amount} level(s) from {user.mention}.")
 
 # Commande pour définir un niveau spécifique
-@bot.command(name="set-level")
+@bot.tree.command(name="set-level", description="Set a user's level")
+@app_commands.describe(user="The user whose level to set", amount="The level to set")
 @commands.has_permissions(manage_guild=True)
-async def set_level(ctx, user: discord.Member, amount: int):
+async def set_level(interaction: discord.Interaction, user: discord.Member, amount: int):
     levels[user.id] = amount
-    await ctx.send(f"Set {user.mention}'s level to {amount}.")
+    await interaction.response.send_message(f"Set {user.mention}'s level to {amount}.")
 
 # Commande pour réinitialiser le niveau d'un utilisateur
-@bot.command(name="reset-level")
+@bot.tree.command(name="reset-level", description="Reset level and XP for a user or all users")
+@app_commands.describe(user="The user to reset (optional)")
 @commands.has_permissions(manage_guild=True)
-async def reset_level(ctx, user: discord.Member = None):
+async def reset_level(interaction: discord.Interaction, user: discord.Member = None):
     if user:
         levels[user.id] = 0
         xp[user.id] = 0
-        await ctx.send(f"Reset level and XP for {user.mention}.")
+        await interaction.response.send_message(f"Reset level and XP for {user.mention}.")
     else:
         levels.clear()
         xp.clear()
-        await ctx.send("Reset levels and XP for all users.")
+        await interaction.response.send_message("Reset levels and XP for all users.")
 
 # Commande pour afficher le classement des utilisateurs
-@bot.command(name="leaderboard")
-async def leaderboard(ctx):
+@bot.tree.command(name="leaderboard", description="Show the leaderboard")
+async def leaderboard(interaction: discord.Interaction):
     sorted_levels = sorted(levels.items(), key=lambda x: x[1], reverse=True)
     leaderboard_text = "\n".join([f"<@{user_id}>: Level {level}" for user_id, level in sorted_levels])
-    await ctx.send(f"Leaderboard:\n{leaderboard_text}")
+    await interaction.response.send_message(f"Leaderboard:\n{leaderboard_text}")
 
 # Commande pour envoyer un message dans un salon choisi (modérateurs uniquement)
-@bot.command(name="say")
+@bot.tree.command(name="say", description="Send a message to a specific channel")
+@app_commands.describe(channel="The channel to send the message to", message="The message to send")
 @commands.has_permissions(manage_guild=True)
-async def say(ctx, channel: discord.TextChannel, *, message: str):
+async def say(interaction: discord.Interaction, channel: discord.TextChannel, message: str):
     await channel.send(message)
-    await ctx.send(f"Message sent to {channel.mention}.")
+    await interaction.response.send_message(f"Message sent to {channel.mention}.")
 
 # Fonction pour vérifier le niveau supérieur
 async def check_level_up(user):
@@ -125,14 +133,14 @@ async def help_command(ctx):
     help_text = (
         "Available commands:\n"
         "!rank | !level | !lvl [user] - Show your or another user's level and XP.\n"
-        "!add-xp <user> <amount> - Add XP to a user.\n"
-        "!add-level <user> <amount> - Add level(s) to a user.\n"
-        "!remove-xp <user> <amount> - Remove XP from a user.\n"
-        "!remove-level <user> <amount> - Remove level(s) from a user.\n"
-        "!set-level <user> <amount> - Set a user's level.\n"
-        "!reset-level [user] - Reset level and XP for a user or all users.\n"
-        "!leaderboard - Show the leaderboard.\n"
-        "!say <channel> <message> - Send a message to a specific channel (moderators only)."
+        "/add-xp <user> <amount> - Add XP to a user.\n"
+        "/add-level <user> <amount> - Add level(s) to a user.\n"
+        "/remove-xp <user> <amount> - Remove XP from a user.\n"
+        "/remove-level <user> <amount> - Remove level(s) from a user.\n"
+        "/set-level <user> <amount> - Set a user's level.\n"
+        "/reset-level [user] - Reset level and XP for a user or all users.\n"
+        "/leaderboard - Show the leaderboard.\n"
+        "/say <channel> <message> - Send a message to a specific channel (moderators only)."
     )
     await ctx.send(help_text)
 
