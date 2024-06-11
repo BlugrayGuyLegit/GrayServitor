@@ -1,4 +1,3 @@
-
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -117,6 +116,21 @@ async def info(ctx):
     with open('info.txt', 'r') as file:
         info_text = file.read()
     await ctx.send(info_text)
+
+# New g!skibidi command
+@bot.command(name="skibidi")
+async def skibidi(ctx):
+    embed = discord.Embed(
+        title="Skibidi toilet song",
+        description=(
+            "Hey skibidi sigma rizzer, there is the skibidi toilet song:\n\n"
+            "(Sometimes I looks like ridiculous) Brrrrrr skibidi dop dop yes yes "
+            "skibidi dop neeh neeh skibidi dop dop dop yes yes skibidi dop neeh neeh "
+            "everyone want to party skibidi skibidi skibidi..."
+        )
+    )
+    embed.set_footer(text=f'requested by {ctx.author.name}')
+    await ctx.send(embed=embed)
 
 if __name__ == '__main__':
     bot.run(TOKEN)
