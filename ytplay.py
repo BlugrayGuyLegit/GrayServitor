@@ -30,30 +30,5 @@ async def play(ctx, url: str):
         voice_client.play(discord.FFmpegPCMAudio(url2), after=lambda e: print('done', e))
         await ctx.send("Playing music.")
 
-@bot.command(name='stop')
-async def stop(ctx):
-    voice_client = ctx.guild.voice_client
-    if voice_client is None:
-        await ctx.send("I am not connected to a voice channel.")
-        return
-    await voice_client.disconnect()
-    await ctx.send("Stopped playing music.")
 
-@bot.tree.command(name="warn", description="Warn a user")
-@app_commands.describe(member="The member to warn", reason="The reason for the warning")
-async def warn(interaction: discord.Interaction, member: discord.Member, reason: str):
-    if member.id not in warn_counts:
-        warn_counts[member.id] = 0
-    warn_counts[member.id] += 1
-    await interaction.response.send_message(f"{member.mention} has been warned for: {reason}. Total warnings: {warn_counts[member.id]}")
-
-@bot.tree.command(name="unwarn", description="Remove a warning from a user")
-@app_commands.describe(member="The member to unwarn")
-async def unwarn(interaction: discord.Interaction, member: discord.Member):
-    if member.id in warn_counts and warn_counts[member.id] > 0:
-        warn_counts[member.id] -= 1
-        await interaction.response.send_message(f"Removed a warning from {member.mention}. Total warnings: {warn_counts[member.id]}")
-    else:
-        await interaction.response.send_message(f"{member.mention} has no warnings.", ephemeral=True)
-        
 bot.run(TOKEN)
