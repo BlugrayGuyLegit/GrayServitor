@@ -20,6 +20,7 @@ xp_threshold = 100
 class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents)
+        self.remove_command('help')  # Supprimer la commande 'help' par défaut
 
     async def setup_hook(self):
         guild = discord.Object(id=GUILD_ID)
