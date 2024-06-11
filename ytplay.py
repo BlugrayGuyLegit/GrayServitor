@@ -40,7 +40,7 @@ async def stop(ctx):
     await ctx.send("Stopped playing music.")
 
 @bot.tree.command(name="warn", description="Warn a user")
-@bot.tree.command.description(member="The member to warn", reason="The reason for the warning")
+@app_commands.describe(member="The member to warn", reason="The reason for the warning")
 async def warn(interaction: discord.Interaction, member: discord.Member, reason: str):
     if member.id not in warn_counts:
         warn_counts[member.id] = 0
@@ -48,7 +48,7 @@ async def warn(interaction: discord.Interaction, member: discord.Member, reason:
     await interaction.response.send_message(f"{member.mention} has been warned for: {reason}. Total warnings: {warn_counts[member.id]}")
 
 @bot.tree.command(name="unwarn", description="Remove a warning from a user")
-@bot.tree.command.description(member="The member to unwarn")
+@app_commands.describe(member="The member to unwarn")
 async def unwarn(interaction: discord.Interaction, member: discord.Member):
     if member.id in warn_counts and warn_counts[member.id] > 0:
         warn_counts[member.id] -= 1
