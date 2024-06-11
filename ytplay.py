@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import youtube_dl
 
-bot = commands.Bot(command_prefix='g!', intents=discord.Intents.voice_states())
+bot = commands.Bot(command_prefix='g!', intents=discord.Intents.default())
 
 @bot.command(name='play')
 async def play(ctx, url: str):
