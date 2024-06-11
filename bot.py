@@ -19,7 +19,7 @@ xp_threshold = 100
 
 class MyBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix="!", intents=intents)
+        super().__init__(command_prefix="g!", intents=intents)
         self.remove_command('help')  # Supprimer la commande 'help' par défaut
 
     async def setup_hook(self):
@@ -31,7 +31,7 @@ bot = MyBot()
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name="!help for any information!"))
+    await bot.change_presence(activity=discord.Game(name="g!help for any information!"))
     print(f'Bot is online as {bot.user}')
 
 # Commande pour afficher le rang ou le niveau d'un utilisateur avec différents alias
@@ -132,7 +132,7 @@ async def check_level_up(user):
 async def help_command(ctx):
     help_text = (
         "Available commands:\n"
-        "!rank | !level | !lvl [user] - Show your or another user's level and XP.\n"
+        "g!rank | g!level | g!lvl [user] - Show your or another user's level and XP.\n"
         "/add-xp <user> <amount> - Add XP to a user.\n"
         "/add-level <user> <amount> - Add level(s) to a user.\n"
         "/remove-xp <user> <amount> - Remove XP from a user.\n"
@@ -140,9 +140,38 @@ async def help_command(ctx):
         "/set-level <user> <amount> - Set a user's level.\n"
         "/reset-level [user] - Reset level and XP for a user or all users.\n"
         "/leaderboard - Show the leaderboard.\n"
-        "/say <channel> <message> - Send a message to a specific channel (moderators only)."
+        "/say <channel> <message> - Send a message to a specific channel (moderators only).\n"
+        "g!ping - Check the bot's latency.\n"
+        "g!skibidi - Skibidi toilet song.\n"
+        "g!info - Show bot information."
     )
     await ctx.send(help_text)
+
+# Commande ping
+@bot.command(name="ping")
+async def ping(ctx):
+    latency = round(bot.latency * 1000)
+    await ctx.send(f'Pong! {latency}ms')
+
+# Commande skibidi
+@bot.command(name="skibidi")
+async def skibidi(ctx):
+    embed = discord.Embed(
+        title="Skibidi toilet song",
+        description=("Hey skibidi sigma rizzer, there is the skibidi toilet song:\n\n"
+                     "(Sometimes I looks like ridiculous) Brrrrrr skibidi dop dop yes yes skibidi dop neeh neeh "
+                     "skibidi dop dop dop yes yes skibidi dop neeh neeh everyone want to party skibidi skibidi "
+                     "skibidi..."),
+        footer=f"requested by {ctx.author.name}"
+    )
+    await ctx.send(embed=embed)
+
+# Commande info
+@bot.command(name="info")
+async def info(ctx):
+    with open('info.txt', 'r') as file:
+        info_text = file.read()
+    await ctx.send(info_text)
 
 if __name__ == '__main__':
     bot.run(TOKEN)
