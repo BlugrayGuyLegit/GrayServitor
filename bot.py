@@ -31,7 +31,7 @@ bot = MyBot()
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name="g!help for any information!"))
+    await bot.change_presence(activity=discord.Game(name="g!help for any information! | 24/7 online bot"))
     print(f'Bot is online as {bot.user}')
 
 # Commande pour afficher le rang ou le niveau d'un utilisateur avec différents alias
