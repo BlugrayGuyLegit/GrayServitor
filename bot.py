@@ -149,10 +149,11 @@ async def help_command(ctx):
 
 @bot.tree.command(name="banned", description="Show all banned users and the reasons for their bans")
 async def banned(interaction: discord.Interaction):
+    await interaction.response.defer()  # Répondre rapidement pour éviter le timeout
     guild = interaction.guild
     banned_users = await guild.bans()
     if not banned_users:
-        await interaction.response.send_message("No users are banned from this guild.")
+        await interaction.followup.send("No users are banned from this guild.")
         return
 
     embed = discord.Embed(title="Banned Users", color=discord.Color.orange())
@@ -161,8 +162,7 @@ async def banned(interaction: discord.Interaction):
         reason = ban_entry.reason or "No reason provided"
         embed.add_field(name=f"{user.name}#{user.discriminator}", value=f"Reason: {reason}", inline=False)
 
-    await interaction.response.send_message(embed=embed)
-
+    await interaction.followup.send(embed=embed)
 # Commande ping
 @bot.command(name="ping")
 async def ping(ctx):
