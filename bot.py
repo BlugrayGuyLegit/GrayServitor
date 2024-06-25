@@ -149,18 +149,28 @@ async def help_command(ctx):
 
 @bot.tree.command(name="banned", description="Show all banned users and the reasons for their bans")
 async def banned(interaction: discord.Interaction):
-    await interaction.response.defer()  # Répondre rapidement pour éviter le timeout
+    await interaction.response.defer()
     guild = interaction.guild
-    banned_users = await guild.bans()
-    if not banned_users:
-        await interaction.followup.send("No users are banned from this guild.")
-        return
+    try:
+        banned_users = []
+        async for ban_entry in guild.bans():
+            banned_users.append(ban_entry)
 
-    embed = discord.Embed(title="Banned Users", color=discord.Color.orange())
-    for ban_entry in banned_users:
-        user = ban_entry.user
-        reason = ban_entry.reason or "No reason provided"
-        embed.add_field(name=f"{user.name}#{user.discriminator}", value=f"Reason: {reason}", inline=False)
+        if not banned_users:
+            await interaction.followup.send("No users are banned from this guild.")
+            return
+
+        embed = discord.Embed(title="Banned Users", color=discord.Color.orange())
+        for ban_entry in banned_users:
+            user = ban_entry.user
+            reason = ban_entry.reason or "No reason provided"
+            embed.add_field(name=f"{user.name}#{user.discriminator}", value=f"Reason: {reason}", inline=False)
+
+        await interaction.followup.send(embed=embed)
+    except discord.Forbidden:
+        await interaction.followup.send("I don't have permission to view banned users.")
+    except discord.HTTPException as e:
+        await interaction.followup.send(f"An error occurred while fetching banned users: {e}")
 
     await interaction.followup.send(embed=embed)
 # Commande ping
