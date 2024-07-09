@@ -1,15 +1,12 @@
 import os
 import discord
 from discord.ext import commands
-from discord_slash import SlashCommand, SlashContext
-from discord_slash import SlashCommand, SlashContext
 import youtube_dl
 import asyncio
 import time
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='g!', intents=discord.Intents.default())
-slash = SlashCommand(bot, sync_commands=True)
 
 last_message = {}
 spam_count = {}
@@ -66,8 +63,8 @@ async def play(ctx, url: str):
         voice_client.play(discord.FFmpegPCMAudio(url2), after=lambda e: print('done', e))
         await ctx.send("Playing music.")
 
-@slash.slash(name="removesuspect", description="Remove Suspect role from a user")
-async def remove_suspect(ctx: SlashContext):
+@bot.command(name='removesuspect')
+async def remove_suspect(ctx):
     if ctx.author.guild_permissions.manage_roles:
         # Remove auto role rule for marking spam messages
         await remove_auto_role_rule(ctx.guild)
