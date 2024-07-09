@@ -15,9 +15,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Clean environment and reinstall dependencies
+      - name: Install dependencies
         run: |
-          python -m pip uninstall -y discord_slash
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
