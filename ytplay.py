@@ -2,6 +2,7 @@ import os
 import discord
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
+from discord_slash import SlashCommand, SlashContext
 import youtube_dl
 import asyncio
 import time
