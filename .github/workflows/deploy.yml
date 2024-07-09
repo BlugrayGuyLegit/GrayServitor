@@ -1,4 +1,4 @@
-name: Deploy Discord Bot
+name: Deploy Gray Servitor (Bot)
 
 on:
   push:
@@ -38,6 +38,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Install dependencies 2
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install Werkzeug==0.16.1
+
+      - name: Clean environment
+        run: |
+          python -m pip uninstall -y discord_slash
+          python -m pip install --upgrade pip
 
       - name: Install YouTube API for python
         run: |
