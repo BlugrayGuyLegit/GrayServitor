@@ -54,4 +54,4 @@ jobs:
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
         run: |
-          python bot.py & python web_app.py & python ytplay.py
+          python bot.py & python ytplay.py
