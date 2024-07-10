@@ -21,6 +21,7 @@ jobs:
           pip install -r requirements.txt
           pip install discord.py python-dotenv Flask
           pip install discord-py-slash-command
+          pip install discord.py langdetect
 
       - name: Check installed packages
         run: |
@@ -54,4 +55,4 @@ jobs:
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
         run: |
-          python bot.py & python ytplay.py
+          python bot.py & python ytplay.py & python language.py
