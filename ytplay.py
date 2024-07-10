@@ -42,6 +42,8 @@ async def play(ctx, url: str):
     # Replace this with your actual music playing logic
     await ctx.send("Playing music.")
 
+commands.Bot(command_prefix='g!', intents=intents)
+
 # Les drapeaux des pays et leurs langues
 LANGUAGE_FLAGS = {
     "english": "🇬🇧",
