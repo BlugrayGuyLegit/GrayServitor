@@ -23,11 +23,16 @@ jobs:
           pip install discord-py-slash-command
           pip install discord.py langdetect
           pip install discord.py
+          pip install langdetect
 
       - name: Check installed packages
         run: |
           python -m pip list
           python -m pip show langdetect
+
+      - name: pip show
+        run: |
+          pip show langdetect
 
       - name: Install Node.js
         run: |
