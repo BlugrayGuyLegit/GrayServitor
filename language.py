@@ -2,9 +2,11 @@ import discord
 from discord.ext import commands
 import asyncio
 
+TOKEN = os.getenv('DISCORD_TOKEN')
+
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='g!', intents=intents)
 
 # Les drapeaux des pays et leurs langues
 LANGUAGE_FLAGS = {
@@ -17,7 +19,7 @@ LANGUAGE_FLAGS = {
 LANGUAGE_ROLES = ["english", "spanish", "french", "russian", "hindi"]
 
 # L'embed de sélection de langue
-@bot.command(name='select_language')
+@bot.command(name='language')
 async def select_language(ctx):
     embed = discord.Embed(title="Choose your language", description="Select your language by reacting with the corresponding flag. Click on ➕ to add a new language.")
     message = await ctx.send(embed=embed)
@@ -78,4 +80,4 @@ async def on_reaction_add(reaction, user):
         if lang in ["english", "spanish"]:
             await reaction.message.channel.send("Whoever moves first is gay")
 
-bot.run(TOKEN)
+  bot.run(TOKEN)
