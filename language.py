@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from langdetect import detect_langs
 import asyncio
-from config import BOT_TOKEN
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -88,4 +87,4 @@ async def on_reaction_add(reaction, user):
         if lang in ["english", "spanish"]:
             await reaction.message.channel.send("Whoever move first is gay")
 
-bot.run(BOT_TOKEN)
+bot.run(TOKEN)
