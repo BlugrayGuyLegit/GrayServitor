@@ -22,10 +22,12 @@ jobs:
           pip install discord.py python-dotenv Flask
           pip install discord-py-slash-command
           pip install discord.py langdetect
+          pip install discord.py
 
       - name: Check installed packages
         run: |
           python -m pip list
+          python -m pip show langdetect
 
       - name: Install Node.js
         run: |
