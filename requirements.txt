@@ -3,3 +3,5 @@ spotipy
 Flask==2.0.1
 discord-py-slash-command
 Flask
+discord.py
+langdetect
