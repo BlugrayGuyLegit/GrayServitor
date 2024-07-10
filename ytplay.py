@@ -53,7 +53,7 @@ LANGUAGE_FLAGS = {
 LANGUAGE_ROLES = ["english", "spanish", "french", "russian", "hindi"]
 
 # L'embed de sélection de langue
-@bot.command(name='language')
+@bot.command(name='select_language')
 async def select_language(ctx):
     embed = discord.Embed(title="Choose your language", description="Select your language by reacting with the corresponding flag. Click on ➕ to add a new language.")
     message = await ctx.send(embed=embed)
