@@ -12,54 +12,152 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Notify Discord - Workflow run started
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Workflow run started\", \"description\": \"Workflow started for $GITHUB_REPOSITORY on $GITHUB_REF by $GITHUB_ACTOR\", \"color\": 3447003}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install discord.py python-dotenv Flask
-          pip install discord-py-slash-command
-          pip install discord.py langdetect
-          pip install discord.py
-          pip install langdetect
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Check installed packages
-        run: |
-          python -m pip list
-          python -m pip show langdetect
+    - name: Notify Discord - Install dependencies started
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Install dependencies started\", \"description\": \"Installing dependencies for $GITHUB_REPOSITORY on $GITHUB_REF by $GITHUB_ACTOR\", \"color\": 10066329}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-      - name: pip show
-        run: |
-          pip show langdetect
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install discord.py python-dotenv Flask
+        pip install discord-py-slash-command
+        pip install discord.py langdetect
+        pip install discord.py
+        pip install langdetect
 
-      - name: Install Node.js
-        run: |
-          curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-          sudo apt-get install -y nodejs
+    - name: Notify Discord - Install dependencies completed
+      if: success()
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Install dependencies completed\", \"description\": \"Dependencies installed for $GITHUB_REPOSITORY on $GITHUB_REF\", \"color\": 3066993}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.9'
+    - name: Notify Discord - Check installed packages
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Check installed packages\", \"description\": \"Checking installed packages for $GITHUB_REPOSITORY on $GITHUB_REF\", \"color\": 10066329}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-      - name: Node.js version (NODE.JS 20)
-        uses: actions/setup-node@v2
-        with:
-           node-version: '20'
+    - name: Check installed packages
+      run: |
+        python -m pip list
+        python -m pip show langdetect
 
-      - name: Install YouTube API for python
-        run: |
-          pip install discord.py[youtube]
-          pip install youtube_dl
+    - name: pip show
+      run: |
+        pip show langdetect
 
-      - name: Run the bot and Flask API
-        env:
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
-          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
-          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-          SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
-        run: |
-          python bot.py & python ytplay.py
+    - name: Notify Discord - Install Node.js started
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Install Node.js started\", \"description\": \"Installing Node.js for $GITHUB_REPOSITORY on $GITHUB_REF by $GITHUB_ACTOR\", \"color\": 10066329}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    - name: Install Node.js
+      run: |
+        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+
+    - name: Notify Discord - Set up Python started
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Set up Python started\", \"description\": \"Setting up Python for $GITHUB_REPOSITORY on $GITHUB_REF by $GITHUB_ACTOR\", \"color\": 10066329}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+
+    - name: Notify Discord - Set up Python completed
+      if: success()
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Set up Python completed\", \"description\": \"Python setup completed for $GITHUB_REPOSITORY on $GITHUB_REF\", \"color\": 3066993}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    - name: Notify Discord - Node.js version (20) started
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Node.js version (20) started\", \"description\": \"Setting up Node.js version 20 for $GITHUB_REPOSITORY on $GITHUB_REF\", \"color\": 10066329}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    - name: Node.js version (NODE.JS 20)
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Notify Discord - Install YouTube API for Python started
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Install YouTube API for Python started\", \"description\": \"Installing YouTube API for Python for $GITHUB_REPOSITORY on $GITHUB_REF\", \"color\": 10066329}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    - name: Install YouTube API for Python
+      run: |
+        pip install discord.py[youtube]
+        pip install youtube_dl
+
+    - name: Notify Discord - Run the bot and Flask API started
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Run the bot and Flask API started\", \"description\": \"Bot and Flask API started for $GITHUB_REPOSITORY on $GITHUB_REF\", \"color\": 16753920}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    - name: Run the bot and Flask API
+      env:
+        DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+        DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
+        SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+        SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+        SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
+      run: |
+        python bot.py & python ytplay.py | tee bot_logs.txt
+
+    - name: Notify Discord - Send bot logs
+      if: always()
+      run: |
+        LOG_CONTENT=$(cat bot_logs.txt)
+        LOG_CONTENT_CUT=$(echo "$LOG_CONTENT" | tail -n 20) # To keep the logs concise
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Bot logs\", \"description\": \"\`\`\`$LOG_CONTENT_CUT\`\`\`\", \"color\": 16753920}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    - name: Notify Discord - Workflow completed
+      if: always()
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Workflow completed\", \"description\": \"Workflow completed for $GITHUB_REPOSITORY on $GITHUB_REF\", \"color\": 3066993}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    - name: Notify Discord - Failure
+      if: failure()
+      run: |
+        curl -H "Content-Type: application/json" \
+             -X POST \
+             -d "{\"embeds\": [{\"title\": \"Workflow failed\", \"description\": \"Workflow failed for $GITHUB_REPOSITORY on $GITHUB_REF\", \"color\": 15158332}]}" \
+             ${{ secrets.DISCORD_WEBHOOK_URL }}
