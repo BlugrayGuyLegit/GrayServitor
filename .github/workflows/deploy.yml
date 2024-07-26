@@ -39,6 +39,7 @@ jobs:
         pip install discord.py
         pip install langdetect
         pip install firebase-admin
+        pip install firebase
 
     - name: Notify Discord - Install dependencies completed
       if: success()
