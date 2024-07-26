@@ -11,6 +11,8 @@ intents.message_content = True
 intents.guilds = True
 intents.members = True
 
+bot = MyBot(command_prefix="g!", intents=intents)
+
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD_ID = int(os.getenv('DISCORD_GUILD_ID'))
 
