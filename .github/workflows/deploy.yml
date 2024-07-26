@@ -135,7 +135,7 @@ jobs:
         SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
         SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
       run: |
-        python bot.py & python ytplay.py | tee bot_logs.txt
+        python bot.py & python ytplay.py & python Level_commands.py | tee bot_logs.txt
 
     - name: Notify Discord - Send bot logs
       if: always()
